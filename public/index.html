@@ -3,368 +3,755 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Braip</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<title>Braip Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#f5f4f0; --card:#fff; --border:#e4e2db;
-  --text:#1a1a18; --muted:#7a7870; --muted2:#aaa89f;
-  --c-transit:#1d4ed8; --c-transit-bg:#eff6ff;
-  --c-wait:#b45309;    --c-wait-bg:#fffbeb;
-  --c-done:#166534;    --c-done-bg:#f0fdf4;
-  --c-problem:#9f1239; --c-problem-bg:#fff1f2;
-  --c-posted:#4b5563;  --c-posted-bg:#f9fafb;
-  --radius:12px; --mono:'IBM Plex Mono',monospace; --sans:'Cabinet Grotesk',sans-serif;
+:root{
+  --bg:#080b12;--bg2:#0d1117;--bg3:#111827;
+  --card:#0f1623;--card2:#141e2e;
+  --border:#1e2d45;--border2:#243450;
+  --text:#e2e8f6;--muted:#4a6080;--muted2:#6b82a0;
+  --mono:'JetBrains Mono',monospace;--sans:'Outfit',sans-serif;
+  --radius:12px;--radius2:8px;
+  --cyan:#00d4ff;--cyan-dim:rgba(0,212,255,.08);--cyan-glow:rgba(0,212,255,.15);
+  --green:#00ff88;--green-dim:rgba(0,255,136,.08);
+  --amber:#ffb800;--amber-dim:rgba(255,184,0,.08);
+  --red:#ff4466;--red-dim:rgba(255,68,102,.08);
+  --purple:#9d6fff;--purple-dim:rgba(157,111,255,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh}
-.shell{max-width:1280px;margin:0 auto;padding:28px 20px}
-.hdr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.hdr h1{font-size:26px;font-weight:800;letter-spacing:-.04em}
-.hdr p{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
-.live-chip{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:500;color:var(--muted);font-family:var(--mono)}
-.live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(34,197,94,.2)}50%{box-shadow:0 0 0 5px rgba(34,197,94,.1)}}
-.live-dot.off{background:#f59e0b;box-shadow:none;animation:none}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.shell{max-width:1400px;margin:0 auto;padding:24px 20px;position:relative;z-index:1}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:14px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.hdr-brand{display:flex;align-items:center;gap:14px}
+.brand-icon{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#00d4ff22,#9d6fff22);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px var(--cyan-glow)}
+.brand-text h1{font-size:20px;font-weight:700;letter-spacing:-.02em;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand-text p{font-size:11px;color:var(--muted2);font-family:var(--mono);margin-top:2px}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.live-chip{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:500;color:var(--muted2);font-family:var(--mono)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.live-dot.off{background:var(--amber);box-shadow:0 0 8px var(--amber);animation:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 8px var(--green)}50%{box-shadow:0 0 16px var(--green)}}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius2);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid var(--border)}
+.btn-ghost{background:var(--card);color:var(--muted2)}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--cyan-glow)}
+.btn-sound{background:var(--card);border:1px solid var(--border);border-radius:var(--radius2);padding:8px 14px;font-size:16px;cursor:pointer;transition:all .15s;color:var(--muted2)}
+.btn-sound:hover{border-color:var(--amber);color:var(--amber)}
+.btn-sound.muted{opacity:.4}
+
+/* ALERTA BANNER */
+.alert-banner{display:none;align-items:center;gap:12px;padding:12px 18px;border-radius:var(--radius);margin-bottom:16px;font-size:13px;font-weight:600;animation:alertPulse 2s infinite}
+.alert-banner.show{display:flex}
+.alert-banner.problema{background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.4);color:var(--red)}
+.alert-banner.retirada{background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.4);color:var(--amber)}
+.alert-banner.critico{background:rgba(255,68,102,.15);border:1px solid var(--red);color:var(--red);box-shadow:0 0 20px rgba(255,68,102,.2)}
+@keyframes alertPulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 16px rgba(255,68,102,.3)}}
+.alert-icon{font-size:20px;animation:shake .5s infinite}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:4px;width:fit-content}
+.tab{padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted2);transition:all .15s;font-family:var(--mono);border:1px solid transparent;position:relative}
+.tab.active{background:var(--card2);color:var(--cyan);border-color:var(--border2);box-shadow:0 0 12px var(--cyan-glow)}
+.tab-badge{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:10px;font-family:var(--mono);display:none}
+.tab-badge.show{display:block}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* SEARCH */
 .search-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-.search-box{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0 16px;transition:border-color .15s}
-.search-box:focus-within{border-color:var(--text)}
-.search-box input{background:none;border:none;outline:none;font-family:var(--mono);font-size:13px;color:var(--text);padding:10px 0;width:100%}
+.search-box{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0 16px;transition:all .2s}
+.search-box:focus-within{border-color:var(--cyan);box-shadow:0 0 16px var(--cyan-glow)}
+.search-box input{background:none;border:none;outline:none;font-family:var(--mono);font-size:13px;color:var(--text);padding:11px 0;width:100%}
 .search-box input::placeholder{color:var(--muted)}
-.btn-ghost{background:var(--card);color:var(--muted);border:1px solid var(--border);border-radius:var(--radius);padding:0 16px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;height:42px}
-.btn-ghost:hover{border-color:var(--text);color:var(--text)}
-.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
-.mc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden}
-.mc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--mc-color,transparent);opacity:0;transition:opacity .15s}
-.mc:hover::after,.mc.on::after{opacity:1}
-.mc:hover,.mc.on{border-color:var(--mc-color,var(--border))}
-.mc-label{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.04em;margin-bottom:8px;text-transform:uppercase}
-.mc-val{font-size:28px;font-weight:800;letter-spacing:-.04em;color:var(--mc-color,var(--text));font-family:var(--mono)}
-.mc-sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;inset:0;background:var(--mc-glow,transparent);opacity:0;transition:opacity .2s}
+.mc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--mc-color,transparent);box-shadow:0 0 12px var(--mc-color,transparent)}
+.mc:hover::before,.mc.on::before{opacity:1}
+.mc:hover,.mc.on{border-color:var(--mc-color,var(--border));box-shadow:0 0 20px var(--mc-shadow,transparent)}
+.mc-label{font-size:10px;color:var(--muted2);font-weight:600;letter-spacing:.08em;margin-bottom:10px;text-transform:uppercase;font-family:var(--mono)}
+.mc-val{font-size:30px;font-weight:800;letter-spacing:-.04em;color:var(--mc-color,var(--text));font-family:var(--mono);line-height:1}
+.mc-sub{font-size:10px;color:var(--muted);margin-top:5px;font-family:var(--mono)}
+
+/* CHIPS */
 .chips{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
-.chip{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--sans)}
-.chip:hover{color:var(--text);border-color:#aaa}
-.chip.on{color:var(--chip-c);border-color:var(--chip-c);background:var(--chip-bg)}
-.chip-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
-.sort-sel{margin-left:auto;background:var(--card);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-family:var(--sans);font-size:12px;font-weight:500;padding:6px 14px;cursor:pointer;outline:none}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:600;color:var(--muted2);cursor:pointer;transition:all .15s}
+.chip:hover{color:var(--text);border-color:var(--border2)}
+.chip.on{color:var(--chip-c);border-color:var(--chip-c);background:var(--chip-bg);box-shadow:0 0 12px var(--chip-shadow)}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.sort-sel{margin-left:auto;background:var(--card);border:1px solid var(--border);border-radius:20px;color:var(--muted2);font-family:var(--mono);font-size:11px;padding:6px 14px;cursor:pointer;outline:none}
+
+/* TABLE */
 .tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.tbl-head{display:grid;grid-template-columns:36px 160px 1fr 170px 110px 70px;padding:10px 20px;background:var(--bg);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;gap:10px;align-items:center}
-.row{display:grid;grid-template-columns:36px 160px 1fr 170px 110px 70px;padding:13px 20px;border-bottom:1px solid var(--border);gap:10px;align-items:center;cursor:pointer;transition:background .1s;animation:fadeIn .25s ease both}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.tbl-head{display:grid;grid-template-columns:36px 150px 1fr 180px 120px 90px;padding:11px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;gap:10px;align-items:center;font-family:var(--mono)}
+.row{display:grid;grid-template-columns:36px 150px 1fr 180px 120px 90px;padding:14px 20px;border-bottom:1px solid var(--border);gap:10px;align-items:center;cursor:pointer;transition:all .15s;animation:rowIn .3s ease both;position:relative}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
 .row:last-child{border-bottom:none}
-.row:hover{background:var(--bg)}
-.row.sel{background:#fafaf7;border-left:3px solid var(--text);padding-left:17px}
+.row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:all .2s}
+.row:hover{background:var(--card2)}
+.row:hover::before{background:var(--cyan)}
+.row.sel{background:var(--card2)}
+.row.sel::before{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.row.urgente{background:rgba(255,68,102,.04)}
+.row.urgente::before{background:var(--red)}
+
 .ri{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
-.rcode{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer}
+.rcode{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--cyan);display:flex;align-items:center;gap:6px;cursor:pointer}
 .rcode-val{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .copy-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:2px;opacity:0;transition:opacity .1s;flex-shrink:0}
 .rcode:hover .copy-btn{opacity:1}
-.rclient .name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rclient .phone{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
-.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
-.pill .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
-.p-postado{background:var(--c-posted-bg);color:var(--c-posted)}
-.p-transito{background:var(--c-transit-bg);color:var(--c-transit)}
-.p-retirada{background:var(--c-wait-bg);color:var(--c-wait)}
-.p-entregue{background:var(--c-done-bg);color:var(--c-done)}
-.p-problema{background:var(--c-problem-bg);color:var(--c-problem)}
-.reta{font-family:var(--mono);font-size:12px;color:var(--muted)}
-.reta.urg{color:var(--c-wait);font-weight:700}
-.reta.ok{color:var(--c-done);font-weight:700}
+.rclient .name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rclient .phone{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:2px}
+
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;font-family:var(--mono);letter-spacing:.04em;border:1px solid transparent}
+.pill .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;box-shadow:0 0 4px currentColor}
+.p-postado {background:rgba(74,96,128,.15);color:#6b82a0;border-color:rgba(74,96,128,.3)}
+.p-transito{background:var(--cyan-dim);color:var(--cyan);border-color:rgba(0,212,255,.3);box-shadow:0 0 8px rgba(0,212,255,.1)}
+.p-retirada{background:var(--amber-dim);color:var(--amber);border-color:rgba(255,184,0,.3);box-shadow:0 0 8px rgba(255,184,0,.1)}
+.p-entregue{background:var(--green-dim);color:var(--green);border-color:rgba(0,255,136,.3);box-shadow:0 0 8px rgba(0,255,136,.1)}
+.p-problema{background:var(--red-dim);color:var(--red);border-color:rgba(255,68,102,.3);box-shadow:0 0 8px rgba(255,68,102,.1)}
+
+/* DIAS NA AGÊNCIA */
+.dias-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.dias-ok{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)}
+.dias-warn{background:rgba(255,184,0,.1);color:var(--amber);border:1px solid rgba(255,184,0,.4)}
+.dias-crit{background:rgba(255,68,102,.15);color:var(--red);border:1px solid rgba(255,68,102,.5);animation:blinkBorder 1s infinite}
+@keyframes blinkBorder{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 8px rgba(255,68,102,.5)}}
+
+.reta{font-family:var(--mono);font-size:11px;color:var(--muted2)}
 .acts{display:flex;gap:5px;justify-content:flex-end}
-.act{background:none;border:1px solid var(--border);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:13px;transition:all .13s}
-.act:hover{background:var(--bg);border-color:#aaa;color:var(--text)}
+.act{background:none;border:1px solid var(--border);border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:12px;transition:all .15s}
+.act:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 8px var(--cyan-glow)}
+
+/* DETAIL */
 .detail{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;display:none}
-.detail.open{display:block;animation:fadeIn .2s ease}
-.det-top{display:flex;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid var(--border);background:var(--bg)}
+.detail.open{display:block;animation:slideDown .2s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.det-top{display:flex;align-items:center;gap:14px;padding:18px 24px;border-bottom:1px solid var(--border);background:var(--bg3);position:relative}
+.det-top::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--cyan),var(--purple),transparent)}
 .det-top-info{flex:1}
-.det-top-info .dname{font-size:15px;font-weight:800}
-.det-top-info .dcode{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
-.det-close{background:none;border:1px solid var(--border);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:15px}
-.det-close:hover{background:var(--border)}
-.det-body{padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.det-name{font-size:16px;font-weight:700}
+.det-code{font-family:var(--mono);font-size:12px;color:var(--cyan);margin-top:3px}
+.det-close{background:none;border:1px solid var(--border);border-radius:6px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:14px;transition:all .15s}
+.det-close:hover{border-color:var(--red);color:var(--red)}
+.det-body{padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.det-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--mono);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
 .det-table{width:100%;border-collapse:collapse}
-.det-table td{padding:7px 0;font-size:12px;border-bottom:1px solid var(--border);vertical-align:top}
-.det-table td:first-child{color:var(--muted);width:120px;font-family:var(--mono);font-size:11px}
+.det-table td{padding:8px 0;font-size:12px;border-bottom:1px solid var(--border);vertical-align:top}
+.det-table td:first-child{color:var(--muted2);width:130px;font-family:var(--mono);font-size:10px}
 .det-table td:last-child{font-weight:600;text-align:right;font-family:var(--mono);font-size:11px}
 .det-table tr:last-child td{border-bottom:none}
+.status-editor{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.status-editor-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--mono);margin-bottom:10px}
+.status-btns{display:flex;gap:6px;flex-wrap:wrap}
+.s-btn{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid transparent;font-family:var(--mono);transition:all .15s;opacity:.5}
+.s-btn:hover,.s-btn.active{opacity:1;box-shadow:0 0 10px currentColor}
+.s-btn-postado {background:rgba(74,96,128,.2);color:#6b82a0;border-color:rgba(74,96,128,.4)}
+.s-btn-transito{background:rgba(0,212,255,.1);color:var(--cyan);border-color:rgba(0,212,255,.4)}
+.s-btn-retirada{background:rgba(255,184,0,.1);color:var(--amber);border-color:rgba(255,184,0,.4)}
+.s-btn-entregue{background:rgba(0,255,136,.1);color:var(--green);border-color:rgba(0,255,136,.4)}
+.s-btn-problema{background:rgba(255,68,102,.1);color:var(--red);border-color:rgba(255,68,102,.4)}
 .det-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.det-btn{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .13s;color:var(--text)}
-.det-btn:hover{border-color:var(--text)}
-.empty{text-align:center;padding:56px 20px;color:var(--muted)}
-.empty-ico{font-size:36px;margin-bottom:10px;opacity:.4}
-.empty p{font-size:14px;font-weight:600}
+.det-btn{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius2);padding:7px 14px;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;color:var(--muted2)}
+.det-btn:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 10px var(--cyan-glow)}
+
+/* ANALYTICS */
+.analytics-header{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.an-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden}
+.an-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--ac,transparent)}
+.an-label{font-size:10px;color:var(--muted2);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-family:var(--mono);margin-bottom:10px}
+.an-val{font-size:28px;font-weight:800;letter-spacing:-.04em;font-family:var(--mono);color:var(--av,var(--text))}
+.an-sub{font-size:11px;color:var(--muted);margin-top:5px;font-family:var(--mono)}
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+.chart-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.chart-sub{font-size:11px;color:var(--muted2);font-family:var(--mono);margin-bottom:20px}
+.chart-area{position:relative;height:220px}
+
+/* AGÊNCIA URGENTE TABLE */
+.urgente-wrap{background:var(--card);border:1px solid rgba(255,68,102,.3);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;display:none}
+.urgente-wrap.show{display:block}
+.urgente-title{padding:12px 20px;background:rgba(255,68,102,.08);border-bottom:1px solid rgba(255,68,102,.2);font-size:12px;font-weight:700;color:var(--red);display:flex;align-items:center;gap:8px}
+.urgente-row{display:flex;align-items:center;gap:14px;padding:11px 20px;border-bottom:1px solid var(--border);font-size:12px}
+.urgente-row:last-child{border-bottom:none}
+.urgente-row:hover{background:var(--card2)}
+
+/* EMPTY */
+.empty{text-align:center;padding:64px 20px;color:var(--muted)}
+.empty-ico{font-size:40px;margin-bottom:14px;opacity:.3;display:block}
+.empty p{font-size:15px;font-weight:600;color:var(--muted2)}
 .empty small{font-family:var(--mono);font-size:11px;margin-top:6px;display:block}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;border-radius:var(--radius);padding:12px 18px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.15);animation:slideUp .25s ease;z-index:999}
-@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:900px){
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card2);border:1px solid var(--cyan);color:var(--cyan);border-radius:var(--radius);padding:12px 18px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 0 30px var(--cyan-glow);animation:toastIn .25s ease;z-index:999;font-family:var(--mono)}
+.toast.danger{border-color:var(--red);color:var(--red);box-shadow:0 0 30px rgba(255,68,102,.3)}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+@media(max-width:1100px){
   .metrics{grid-template-columns:repeat(3,1fr)}
-  .tbl-head,.row{grid-template-columns:36px 140px 1fr 140px}
-  .tbl-head span:nth-child(5),.tbl-head span:nth-child(6),
-  .row>*:nth-child(5),.row>*:nth-child(6){display:none}
+  .analytics-header{grid-template-columns:repeat(2,1fr)}
+  .tbl-head,.row{grid-template-columns:36px 140px 1fr 160px 100px}
+  .tbl-head span:last-child,.row>*:last-child{display:none}
+}
+@media(max-width:680px){
+  .tbl-head,.row{grid-template-columns:130px 1fr 110px}
+  .tbl-head span:nth-child(1),.tbl-head span:nth-child(5),
+  .row>*:nth-child(1),.row>*:nth-child(5){display:none}
   .det-body{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
 <div class="shell">
 
+  <!-- HEADER -->
   <div class="hdr">
-    <div>
-      <h1>Pedidos Braip</h1>
-      <p id="ts">Conectando ao servidor...</p>
+    <div class="hdr-brand">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-text">
+        <h1>Braip Dashboard</h1>
+        <p id="ts">Conectando...</p>
+      </div>
     </div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <div class="hdr-right">
       <div class="live-chip"><div class="live-dot" id="ldot"></div><span id="lstatus">Carregando...</span></div>
-      <button class="btn-ghost" onclick="exportCSV()">↓ Exportar CSV</button>
+      <button class="btn-sound" id="btn-sound" onclick="toggleSound()" title="Alerta sonoro">🔔</button>
+      <button class="btn btn-ghost" onclick="exportCSV()">↓ CSV</button>
     </div>
   </div>
 
-  <div class="search-row">
-    <div class="search-box">
-      <span style="color:var(--muted)">⌕</span>
-      <input id="q" type="text" placeholder="Buscar código, nome, telefone..." oninput="render()">
+  <!-- ALERTAS -->
+  <div class="alert-banner critico" id="alert-problema">
+    <span class="alert-icon">🚨</span>
+    <span id="alert-problema-txt">Pedido com problema detectado!</span>
+    <button onclick="flt('problema');document.getElementById('alert-problema').classList.remove('show')" style="margin-left:auto;background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700">Ver agora</button>
+  </div>
+  <div class="alert-banner retirada" id="alert-retirada">
+    <span class="alert-icon">⏳</span>
+    <span id="alert-retirada-txt">Pedido aguardando retirada!</span>
+    <button onclick="flt('retirada');document.getElementById('alert-retirada').classList.remove('show')" style="margin-left:auto;background:none;border:1px solid var(--amber);color:var(--amber);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:700">Ver agora</button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('pedidos',this)">📦 Pedidos</div>
+    <div class="tab" onclick="switchTab('agencia',this)">⏳ Na agência <span class="tab-badge" id="badge-agencia">0</span></div>
+    <div class="tab" onclick="switchTab('analytics',this)">📊 Analytics</div>
+  </div>
+
+  <!-- ═══ TAB PEDIDOS ═══ -->
+  <div class="tab-content active" id="tab-pedidos">
+    <div class="search-row">
+      <div class="search-box">
+        <span style="color:var(--cyan);opacity:.6;font-size:16px">⌕</span>
+        <input id="q" type="text" placeholder="Buscar código, nome, telefone, cidade..." oninput="render()">
+      </div>
+    </div>
+    <div class="metrics">
+      <div class="mc" style="--mc-color:var(--muted2);--mc-glow:rgba(107,130,160,.04);--mc-shadow:rgba(107,130,160,.1)" onclick="flt('all')" id="mc-all">
+        <div class="mc-label">Total</div><div class="mc-val" id="mv-all">0</div><div class="mc-sub">pedidos</div>
+      </div>
+      <div class="mc" style="--mc-color:var(--cyan);--mc-glow:rgba(0,212,255,.05);--mc-shadow:rgba(0,212,255,.15)" onclick="flt('transito')" id="mc-transito">
+        <div class="mc-label">Em trânsito</div><div class="mc-val" id="mv-transito">0</div><div class="mc-sub">a caminho</div>
+      </div>
+      <div class="mc" style="--mc-color:var(--amber);--mc-glow:rgba(255,184,0,.05);--mc-shadow:rgba(255,184,0,.15)" onclick="flt('retirada')" id="mc-retirada">
+        <div class="mc-label">Aguard. retirada</div><div class="mc-val" id="mv-retirada">0</div><div class="mc-sub">⚡ na agência</div>
+      </div>
+      <div class="mc" style="--mc-color:var(--green);--mc-glow:rgba(0,255,136,.05);--mc-shadow:rgba(0,255,136,.15)" onclick="flt('entregue')" id="mc-entregue">
+        <div class="mc-label">Entregues</div><div class="mc-val" id="mv-entregue">0</div><div class="mc-sub">concluídos</div>
+      </div>
+      <div class="mc" style="--mc-color:var(--red);--mc-glow:rgba(255,68,102,.05);--mc-shadow:rgba(255,68,102,.15)" onclick="flt('problema')" id="mc-problema">
+        <div class="mc-label">Problemas</div><div class="mc-val" id="mv-problema">0</div><div class="mc-sub">⚠ atenção</div>
+      </div>
+    </div>
+    <div class="chips">
+      <div class="chip on" data-f="all" style="--chip-c:var(--text);--chip-bg:rgba(226,232,246,.05);--chip-shadow:rgba(226,232,246,.05)" onclick="flt('all',this)">Todos</div>
+      <div class="chip" data-f="postado" style="--chip-c:#6b82a0;--chip-bg:rgba(74,96,128,.1);--chip-shadow:rgba(74,96,128,.1)" onclick="flt('postado',this)"><span class="chip-dot"></span>Postado</div>
+      <div class="chip" data-f="transito" style="--chip-c:var(--cyan);--chip-bg:var(--cyan-dim);--chip-shadow:var(--cyan-glow)" onclick="flt('transito',this)"><span class="chip-dot"></span>Em trânsito</div>
+      <div class="chip" data-f="retirada" style="--chip-c:var(--amber);--chip-bg:var(--amber-dim);--chip-shadow:rgba(255,184,0,.15)" onclick="flt('retirada',this)"><span class="chip-dot"></span>Aguardando retirada</div>
+      <div class="chip" data-f="entregue" style="--chip-c:var(--green);--chip-bg:var(--green-dim);--chip-shadow:rgba(0,255,136,.15)" onclick="flt('entregue',this)"><span class="chip-dot"></span>Entregue</div>
+      <div class="chip" data-f="problema" style="--chip-c:var(--red);--chip-bg:var(--red-dim);--chip-shadow:rgba(255,68,102,.15)" onclick="flt('problema',this)"><span class="chip-dot"></span>Problema</div>
+      <select class="sort-sel" onchange="render()">
+        <option value="newest">Mais recentes</option>
+        <option value="oldest">Mais antigos</option>
+        <option value="status">Por status</option>
+        <option value="name">Por nome A-Z</option>
+        <option value="dias">Dias na agência</option>
+      </select>
+    </div>
+    <div class="detail" id="detail"></div>
+    <div class="tbl-wrap">
+      <div class="tbl-head">
+        <span>#</span><span>Código rastreio</span><span>Cliente</span>
+        <span>Status</span><span>Agência / Previsão</span><span></span>
+      </div>
+      <div id="list"></div>
     </div>
   </div>
 
-  <div class="metrics">
-    <div class="mc" style="--mc-color:#4b5563" onclick="flt('all')" id="mc-all">
-      <div class="mc-label">Total</div>
-      <div class="mc-val" id="mv-all">0</div>
-      <div class="mc-sub">pedidos</div>
+  <!-- ═══ TAB AGÊNCIA ═══ -->
+  <div class="tab-content" id="tab-agencia">
+    <div class="urgente-wrap show" id="urgente-list-wrap">
+      <div class="urgente-title">🚨 Pedidos há 2+ dias na agência — risco de devolução</div>
+      <div id="urgente-list"></div>
     </div>
-    <div class="mc" style="--mc-color:var(--c-transit)" onclick="flt('transito')" id="mc-transito">
-      <div class="mc-label">Em trânsito</div>
-      <div class="mc-val" id="mv-transito">0</div>
-      <div class="mc-sub">a caminho</div>
-    </div>
-    <div class="mc" style="--mc-color:var(--c-wait)" onclick="flt('retirada')" id="mc-retirada">
-      <div class="mc-label">Aguard. retirada</div>
-      <div class="mc-val" id="mv-retirada">0</div>
-      <div class="mc-sub">⚡ na agência</div>
-    </div>
-    <div class="mc" style="--mc-color:var(--c-done)" onclick="flt('entregue')" id="mc-entregue">
-      <div class="mc-label">Entregues</div>
-      <div class="mc-val" id="mv-entregue">0</div>
-      <div class="mc-sub">concluídos</div>
-    </div>
-    <div class="mc" style="--mc-color:var(--c-problem)" onclick="flt('problema')" id="mc-problema">
-      <div class="mc-label">Problemas</div>
-      <div class="mc-val" id="mv-problema">0</div>
-      <div class="mc-sub">⚠ atenção</div>
+    <div class="tbl-wrap">
+      <div class="tbl-head" style="grid-template-columns:36px 150px 1fr 120px 100px 80px">
+        <span>#</span><span>Código</span><span>Cliente</span><span>Dias na agência</span><span>Status</span><span></span>
+      </div>
+      <div id="agencia-list"></div>
     </div>
   </div>
 
-  <div class="chips">
-    <div class="chip on" data-f="all" style="--chip-c:#4b5563;--chip-bg:#f9fafb" onclick="flt('all',this)">Todos</div>
-    <div class="chip" data-f="postado" style="--chip-c:var(--c-posted);--chip-bg:var(--c-posted-bg)" onclick="flt('postado',this)"><span class="chip-dot"></span>Postado</div>
-    <div class="chip" data-f="transito" style="--chip-c:var(--c-transit);--chip-bg:var(--c-transit-bg)" onclick="flt('transito',this)"><span class="chip-dot"></span>Em trânsito</div>
-    <div class="chip" data-f="retirada" style="--chip-c:var(--c-wait);--chip-bg:var(--c-wait-bg)" onclick="flt('retirada',this)"><span class="chip-dot"></span>Aguardando retirada</div>
-    <div class="chip" data-f="entregue" style="--chip-c:var(--c-done);--chip-bg:var(--c-done-bg)" onclick="flt('entregue',this)"><span class="chip-dot"></span>Entregue ao destinatário</div>
-    <div class="chip" data-f="problema" style="--chip-c:var(--c-problem);--chip-bg:var(--c-problem-bg)" onclick="flt('problema',this)"><span class="chip-dot"></span>Problema</div>
-    <select class="sort-sel" onchange="render()">
-      <option value="newest">Mais recentes</option>
-      <option value="oldest">Mais antigos</option>
-      <option value="status">Por status</option>
-      <option value="name">Por nome A-Z</option>
-    </select>
-  </div>
-
-  <div class="detail" id="detail"></div>
-
-  <div class="tbl-wrap">
-    <div class="tbl-head">
-      <span>#</span><span>Código rastreio</span><span>Cliente</span>
-      <span>Status</span><span>Previsão</span><span></span>
+  <!-- ═══ TAB ANALYTICS ═══ -->
+  <div class="tab-content" id="tab-analytics">
+    <div class="analytics-header">
+      <div class="an-card" style="--ac:var(--cyan);--av:var(--cyan)">
+        <div class="an-label">Hoje — pedidos</div>
+        <div class="an-val" id="an-hoje-qtd">0</div>
+        <div class="an-sub" id="an-hoje-data">—</div>
+      </div>
+      <div class="an-card" style="--ac:var(--green);--av:var(--green)">
+        <div class="an-label">Hoje — valor</div>
+        <div class="an-val" id="an-hoje-val">R$ 0</div>
+        <div class="an-sub">soma das vendas</div>
+      </div>
+      <div class="an-card" style="--ac:var(--purple);--av:var(--purple)">
+        <div class="an-label">Esta semana</div>
+        <div class="an-val" id="an-semana-qtd">0</div>
+        <div class="an-sub" id="an-semana-val">R$ 0 em vendas</div>
+      </div>
+      <div class="an-card" style="--ac:var(--amber);--av:var(--amber)">
+        <div class="an-label">Ticket médio</div>
+        <div class="an-val" id="an-ticket">R$ 0</div>
+        <div class="an-sub">média por pedido</div>
+      </div>
     </div>
-    <div id="list"></div>
+    <div class="chart-wrap">
+      <div class="chart-title">Pedidos por dia + Valor vendido</div>
+      <div class="chart-sub">Últimos 14 dias</div>
+      <div class="chart-area"><canvas id="myChart"></canvas></div>
+    </div>
   </div>
 
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
-const S = {
-  postado:  {label:'Postado',             cls:'p-postado'},
-  transito: {label:'Em trânsito',         cls:'p-transito'},
-  retirada: {label:'Aguardando retirada', cls:'p-retirada'},
-  entregue: {label:'Entregue ao destinatário',cls:'p-entregue'},
-  problema: {label:'Problema na entrega', cls:'p-problema'},
+const S={
+  postado: {label:'Postado',    cls:'p-postado'},
+  transito:{label:'Em trânsito',cls:'p-transito'},
+  retirada:{label:'Aguardando retirada',cls:'p-retirada'},
+  entregue:{label:'Entregue',   cls:'p-entregue'},
+  problema:{label:'Problema',   cls:'p-problema'},
 }
 
-let orders=[], filter='all', selId=null
+let orders=[], filter='all', selId=null, chartInst=null
+let soundOn = localStorage.getItem('soundOn') !== 'false'
+let lastIds = new Set()
+let prevCounts = {retirada:0, problema:0}
 
-// busca dados do servidor a cada 10 segundos
-async function fetchOrders() {
+// Atualiza ícone do som
+function updateSoundBtn(){
+  const btn = document.getElementById('btn-sound')
+  btn.textContent = soundOn ? '🔔' : '🔕'
+  btn.classList.toggle('muted', !soundOn)
+}
+updateSoundBtn()
+
+function toggleSound(){
+  soundOn = !soundOn
+  localStorage.setItem('soundOn', soundOn)
+  updateSoundBtn()
+  toast(soundOn ? '🔔 Alerta sonoro ativado' : '🔕 Alerta sonoro desativado')
+}
+
+// ── SOM ──────────────────────────────────────────────────────
+function playAlert(type) {
+  if (!soundOn) return
   try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const beeps = type === 'problema' ? [880, 660, 880] : [660, 880]
+    beeps.forEach((freq, i) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain); gain.connect(ctx.destination)
+      osc.frequency.value = freq
+      osc.type = type === 'problema' ? 'sawtooth' : 'sine'
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.2)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.2 + 0.15)
+      osc.start(ctx.currentTime + i * 0.2)
+      osc.stop(ctx.currentTime + i * 0.2 + 0.15)
+    })
+  } catch(e) {}
+}
+
+// ── FETCH ─────────────────────────────────────────────────────
+async function fetchOrders(){
+  try{
     const r = await fetch('/api/orders')
-    if (!r.ok) throw new Error('erro')
+    if(!r.ok) throw new Error()
     const data = await r.json()
+
+    // detecta novos pedidos
+    const newIds = new Set(data.map(o => o.transaction_id || o.id))
+    const isFirst = lastIds.size === 0
+
+    if (!isFirst) {
+      // verifica novos com problema ou retirada
+      data.forEach(o => {
+        const id = o.transaction_id || o.id
+        if (!lastIds.has(id)) {
+          if (o.status === 'problema') {
+            playAlert('problema')
+            toast(`🚨 Problema: ${o.name}`, true)
+          } else if (o.status === 'retirada') {
+            playAlert('retirada')
+            toast(`⏳ Retirada: ${o.name}`)
+          }
+        }
+      })
+
+      // verifica se aumentou count de problema/retirada
+      const newCounts = {
+        problema: data.filter(o=>o.status==='problema').length,
+        retirada: data.filter(o=>o.status==='retirada').length,
+      }
+      if (newCounts.problema > prevCounts.problema) playAlert('problema')
+      if (newCounts.retirada > prevCounts.retirada) playAlert('retirada')
+      prevCounts = newCounts
+    }
+
+    lastIds = newIds
     orders = data
     setOnline(true)
     render()
-  } catch(e) {
-    setOnline(false)
-  }
+    renderAgencia()
+    checkAlertas()
+    if(document.getElementById('tab-analytics').classList.contains('active')) renderAnalytics()
+  } catch(e){ setOnline(false) }
 }
 
-function setOnline(on) {
-  const dot = document.getElementById('ldot')
-  const lbl = document.getElementById('lstatus')
-  const ts  = document.getElementById('ts')
-  dot.className = 'live-dot' + (on?'':' off')
-  lbl.textContent = on ? 'Ao vivo' : 'Sem conexão'
-  if(on) ts.textContent = 'Atualizado ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+function setOnline(on){
+  document.getElementById('ldot').className='live-dot'+(on?'':' off')
+  document.getElementById('lstatus').textContent=on?'Ao vivo':'Sem conexão'
+  if(on) document.getElementById('ts').textContent='sync '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
 }
 
-function render() {
-  const q   = document.getElementById('q').value.toLowerCase().trim()
-  const srt = document.querySelector('.sort-sel').value
+// ── ALERTAS VISUAIS ───────────────────────────────────────────
+function checkAlertas(){
+  const problemas = orders.filter(o=>o.status==='problema')
+  const retiradas = orders.filter(o=>o.status==='retirada')
+  const criticos  = retiradas.filter(o=>diasNaAgencia(o)>=2)
 
-  const cnt = {all:orders.length,postado:0,transito:0,retirada:0,entregue:0,problema:0}
-  orders.forEach(o => cnt[o.status]=(cnt[o.status]||0)+1)
-  document.getElementById('mv-all').textContent      = cnt.all
-  document.getElementById('mv-transito').textContent = cnt.transito
-  document.getElementById('mv-retirada').textContent = cnt.retirada
-  document.getElementById('mv-entregue').textContent = cnt.entregue
-  document.getElementById('mv-problema').textContent = cnt.problema
+  const pb = document.getElementById('alert-problema')
+  const rb = document.getElementById('alert-retirada')
 
+  if(problemas.length){
+    document.getElementById('alert-problema-txt').textContent = `🚨 ${problemas.length} pedido(s) com problema!`
+    pb.classList.add('show')
+  } else pb.classList.remove('show')
+
+  if(criticos.length){
+    document.getElementById('alert-retirada-txt').textContent = `⏳ ${criticos.length} pedido(s) há 2+ dias na agência — risco de devolução!`
+    rb.classList.add('show')
+  } else if(retiradas.length){
+    document.getElementById('alert-retirada-txt').textContent = `⏳ ${retiradas.length} pedido(s) aguardando retirada`
+    rb.classList.add('show')
+  } else rb.classList.remove('show')
+
+  // badge da aba agência
+  const badge = document.getElementById('badge-agencia')
+  if(criticos.length){ badge.textContent=criticos.length; badge.classList.add('show') }
+  else badge.classList.remove('show')
+}
+
+// ── DIAS NA AGÊNCIA ───────────────────────────────────────────
+function diasNaAgencia(o){
+  if(o.status !== 'retirada') return 0
+  const ts = o.received_at || o.receivedAt || Date.now()
+  return Math.floor((Date.now() - ts) / (1000*60*60*24))
+}
+
+function diasBadge(dias){
+  if(dias === 0) return `<span class="dias-badge dias-ok">hoje</span>`
+  if(dias === 1) return `<span class="dias-badge dias-ok">${dias}d na agência</span>`
+  if(dias < 2)  return `<span class="dias-badge dias-warn">${dias}d ⚠</span>`
+  return `<span class="dias-badge dias-crit">${dias}d 🚨 URGENTE</span>`
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(name, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'))
+  el.classList.add('active')
+  document.getElementById('tab-'+name).classList.add('active')
+  if(name==='analytics') renderAnalytics()
+  if(name==='agencia') renderAgencia()
+}
+
+// ── RENDER PEDIDOS ────────────────────────────────────────────
+function render(){
+  const q=document.getElementById('q').value.toLowerCase().trim()
+  const srt=document.querySelector('.sort-sel').value
+  const cnt={all:orders.length,postado:0,transito:0,retirada:0,entregue:0,problema:0}
+  orders.forEach(o=>cnt[o.status]=(cnt[o.status]||0)+1)
+  document.getElementById('mv-all').textContent=cnt.all
+  document.getElementById('mv-transito').textContent=cnt.transito
+  document.getElementById('mv-retirada').textContent=cnt.retirada
+  document.getElementById('mv-entregue').textContent=cnt.entregue
+  document.getElementById('mv-problema').textContent=cnt.problema
   ;['all','transito','retirada','entregue','problema'].forEach(k=>{
-    document.getElementById('mc-'+k).classList.toggle('on', filter===k)
+    document.getElementById('mc-'+k).classList.toggle('on',filter===k)
   })
-
-  let list = orders.filter(o=>{
-    if(filter!=='all' && o.status!==filter) return false
-    if(q && ![o.code,o.name,o.phone,o.city,o.id].join(' ').toLowerCase().includes(q)) return false
+  let list=orders.filter(o=>{
+    if(filter!=='all'&&o.status!==filter)return false
+    if(q&&![o.code,o.name,o.phone,o.city,o.transaction_id,o.id].join(' ').toLowerCase().includes(q))return false
     return true
   })
+  if(srt==='oldest')     list.sort((a,b)=>(a.received_at||a.receivedAt||0)-(b.received_at||b.receivedAt||0))
+  else if(srt==='status')list.sort((a,b)=>a.status.localeCompare(b.status))
+  else if(srt==='name')  list.sort((a,b)=>a.name.localeCompare(b.name))
+  else if(srt==='dias')  list.sort((a,b)=>diasNaAgencia(b)-diasNaAgencia(a))
+  else                   list.sort((a,b)=>(b.received_at||b.receivedAt||0)-(a.received_at||a.receivedAt||0))
 
-  if(srt==='oldest')      list.sort((a,b)=>a.receivedAt-b.receivedAt)
-  else if(srt==='status') list.sort((a,b)=>a.status.localeCompare(b.status))
-  else if(srt==='name')   list.sort((a,b)=>a.name.localeCompare(b.name))
-  else                    list.sort((a,b)=>b.receivedAt-a.receivedAt)
-
-  const el = document.getElementById('list')
+  const el=document.getElementById('list')
   if(!list.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">📦</div><p>${q?'Nenhum resultado':'Nenhum pedido ainda'}</p><small>${q?'Tente outro termo':'Aguardando dados da Braip via webhook'}</small></div>`
+    el.innerHTML=`<div class="empty"><span class="empty-ico">📦</span><p>${q?'Nenhum resultado':'Nenhum pedido ainda'}</p><small>${q?'Tente outro termo':'Aguardando dados da Braip via webhook'}</small></div>`
     return
   }
-
-  el.innerHTML = list.map((o,i)=>{
-    const sm = S[o.status]||S.postado
-    const etaCls = o.status==='retirada'?'urg':o.status==='entregue'?'ok':''
-    const codeShort = o.code?(o.code.length>15?o.code.slice(0,13)+'…':o.code):'—'
-    return `<div class="row${o.id===selId?' sel':''}" onclick="sel('${o.id}')" style="animation-delay:${i*15}ms">
+  el.innerHTML=list.map((o,i)=>{
+    const sm=S[o.status]||S.postado
+    const id=o.transaction_id||o.id
+    const dias=diasNaAgencia(o)
+    const isUrgente=o.status==='retirada'&&dias>=2
+    const codeShort=o.code?(o.code.length>14?o.code.slice(0,12)+'…':o.code):'—'
+    const agenciaCol = o.status==='retirada' ? diasBadge(dias) : `<span class="reta">${o.eta||'—'}</span>`
+    return `<div class="row${id===selId?' sel':''}${isUrgente?' urgente':''}" onclick="sel('${id}')" style="animation-delay:${Math.min(i*12,250)}ms">
       <span class="ri">${i+1}</span>
       <span class="rcode" onclick="event.stopPropagation();cp('${o.code||''}')">
         <span class="rcode-val" title="${o.code||''}">${codeShort}</span>
-        <button class="copy-btn" title="Copiar">⎘</button>
+        <button class="copy-btn">⎘</button>
       </span>
-      <span class="rclient">
-        <div class="name">${o.name}</div>
-        <div class="phone">${fmtPhone(o.phone)}${o.city?' · '+o.city:''}</div>
-      </span>
+      <span class="rclient"><div class="name">${o.name}</div><div class="phone">${fmtPhone(o.phone)}${o.city?' · '+o.city:''}</div></span>
       <span><span class="pill ${sm.cls}"><span class="dot"></span>${sm.label}</span></span>
-      <span class="reta ${etaCls}">${o.eta||'—'}</span>
+      <span>${agenciaCol}</span>
       <span class="acts">
         <button class="act" title="Rastrear" onclick="event.stopPropagation();correios('${o.code||''}')">🔍</button>
+        <button class="act" title="Editar" onclick="event.stopPropagation();sel('${id}')">✏</button>
       </span>
     </div>`
   }).join('')
 }
 
+// ── RENDER AGÊNCIA ────────────────────────────────────────────
+function renderAgencia(){
+  const retiradas = orders.filter(o=>o.status==='retirada')
+    .map(o=>({...o, dias:diasNaAgencia(o)}))
+    .sort((a,b)=>b.dias-a.dias)
+
+  const criticos = retiradas.filter(o=>o.dias>=2)
+  const urgenteWrap = document.getElementById('urgente-list-wrap')
+  const urgenteList = document.getElementById('urgente-list')
+
+  if(criticos.length){
+    urgenteWrap.classList.add('show')
+    urgenteList.innerHTML = criticos.map(o=>`
+      <div class="urgente-row">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--cyan)">${o.code||'—'}</span>
+        <span style="font-weight:600;flex:1">${o.name}</span>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--muted2)">${fmtPhone(o.phone)}</span>
+        ${diasBadge(o.dias)}
+        <button class="act" onclick="correios('${o.code||''}')">🔍</button>
+        ${o.phone?`<button class="act" onclick="wpp('${o.phone}','${o.code||''}')">💬</button>`:''}
+      </div>`).join('')
+  } else {
+    urgenteWrap.classList.remove('show')
+  }
+
+  const agList = document.getElementById('agencia-list')
+  if(!retiradas.length){
+    agList.innerHTML=`<div class="empty"><span class="empty-ico">✅</span><p>Nenhum pedido na agência</p><small>Tudo certo por aqui!</small></div>`
+    return
+  }
+  agList.innerHTML = retiradas.map((o,i)=>`
+    <div class="row${o.dias>=2?' urgente':''}" style="grid-template-columns:36px 150px 1fr 120px 100px 80px;animation-delay:${i*15}ms" onclick="sel('${o.transaction_id||o.id}');switchTab('pedidos',document.querySelector('.tab'))">
+      <span class="ri">${i+1}</span>
+      <span class="rcode" onclick="event.stopPropagation();cp('${o.code||''}')"><span class="rcode-val">${o.code||'—'}</span><button class="copy-btn">⎘</button></span>
+      <span class="rclient"><div class="name">${o.name}</div><div class="phone">${fmtPhone(o.phone)}${o.city?' · '+o.city:''}</div></span>
+      <span>${diasBadge(o.dias)}</span>
+      <span><span class="pill p-retirada"><span class="dot"></span>Na agência</span></span>
+      <span class="acts">
+        <button class="act" onclick="event.stopPropagation();correios('${o.code||''}')">🔍</button>
+        ${o.phone?`<button class="act" onclick="event.stopPropagation();wpp('${o.phone}','${o.code||''}')">💬</button>`:''}
+      </span>
+    </div>`).join('')
+}
+
+// ── DETAIL ────────────────────────────────────────────────────
 function sel(id){
-  if(selId===id){selId=null;closeDetail();render();return}
+  if(selId===id&&document.getElementById('detail').classList.contains('open')){selId=null;closeDetail();render();return}
   selId=id
-  const o=orders.find(x=>x.id===id)
-  if(!o)return
+  const o=orders.find(x=>(x.transaction_id||x.id)===id); if(!o)return
   const sm=S[o.status]||S.postado
+  const dias=diasNaAgencia(o)
+  const statusBtns=Object.keys(S).map(k=>`<button class="s-btn s-btn-${k}${o.status===k?' active':''}" onclick="updateStatus('${id}','${k}')">${S[k].label}</button>`).join('')
   document.getElementById('detail').innerHTML=`
     <div class="det-top">
       <div class="det-top-info">
-        <div class="dname">${o.name}${o.city?` <span style="font-weight:400;color:var(--muted)">· ${o.city}</span>`:''}` +`</div>
-        <div class="dcode">${o.code||'Sem código de rastreio'}</div>
+        <div class="det-name">${o.name}${o.city?` <span style="color:var(--muted2);font-weight:400;font-size:13px">· ${o.city}</span>`:''}</div>
+        <div class="det-code">${o.code||'Sem código'}</div>
       </div>
-      <span class="pill ${sm.cls}" style="font-size:11px"><span class="dot"></span>${sm.label}</span>
+      <span class="pill ${sm.cls}"><span class="dot"></span>${sm.label}</span>
+      ${o.status==='retirada'?diasBadge(dias):''}
       <button class="det-close" onclick="closeDetail()">✕</button>
     </div>
     <div class="det-body">
       <div>
+        <div class="det-col-title">Informações</div>
         <table class="det-table">
-          <tr><td>Código rastreio</td><td>${o.code||'—'}</td></tr>
-          <tr><td>Transação</td><td>${o.id||'—'}</td></tr>
+          <tr><td>Rastreio</td><td style="color:var(--cyan)">${o.code||'—'}</td></tr>
+          <tr><td>Transação</td><td>${o.transaction_id||o.id||'—'}</td></tr>
           <tr><td>Transportadora</td><td>${o.carrier||'—'}</td></tr>
           <tr><td>WhatsApp</td><td>${fmtPhone(o.phone)}</td></tr>
-          <tr><td>Previsão entrega</td><td>${o.eta||'—'}</td></tr>
-          <tr><td>Status original</td><td>${o.rawStatus||'—'}</td></tr>
-          <tr><td>Recebido em</td><td>${new Date(o.receivedAt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td></tr>
+          <tr><td>Previsão</td><td>${o.eta||'—'}</td></tr>
+          ${o.status==='retirada'?`<tr><td>Dias na agência</td><td style="color:${dias>=2?'var(--red)':'var(--amber)'}">${dias} dia(s)</td></tr>`:''}
+          <tr><td>Recebido</td><td>${new Date(o.received_at||o.receivedAt||Date.now()).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td></tr>
         </table>
         <div class="det-actions">
-          <button class="det-btn" onclick="cp('${o.code||''}')">⎘ Copiar código</button>
+          <button class="det-btn" onclick="cp('${o.code||''}')">⎘ Copiar</button>
           <button class="det-btn" onclick="correios('${o.code||''}')">🔍 Rastrear</button>
           ${o.phone?`<button class="det-btn" onclick="wpp('${o.phone}','${o.code||''}')">💬 WhatsApp</button>`:''}
         </div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;text-align:center;padding:20px">
-        <div>
-          <div style="font-size:32px;margin-bottom:10px">${sm.cls==='p-retirada'?'⏳':sm.cls==='p-entregue'?'✅':sm.cls==='p-problema'?'⚠️':sm.cls==='p-transito'?'🚚':'📮'}</div>
-          <div style="font-weight:700;color:var(--text)">${sm.label}</div>
-          <div style="margin-top:6px;font-size:12px">Previsão: <strong>${o.eta||'—'}</strong></div>
+      <div>
+        <div class="det-col-title">Alterar status</div>
+        <div class="status-editor">
+          <div class="status-editor-label">Atual: <span style="color:var(--${o.status==='entregue'?'green':o.status==='retirada'?'amber':o.status==='problema'?'red':o.status==='transito'?'cyan':'muted2'})">${sm.label}</span></div>
+          <div class="status-btns">${statusBtns}</div>
         </div>
       </div>
     </div>`
   document.getElementById('detail').classList.add('open')
   render()
-  document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'nearest'})
+  setTimeout(()=>document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'nearest'}),50)
 }
 function closeDetail(){selId=null;document.getElementById('detail').classList.remove('open')}
 
+async function updateStatus(id,status){
+  try{
+    await fetch('/api/orders/'+encodeURIComponent(id)+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})})
+    await fetchOrders(); sel(id); toast('✓ Status → '+S[status].label)
+  }catch(e){
+    const o=orders.find(x=>(x.transaction_id||x.id)===id)
+    if(o){o.status=status;render();renderAgencia();checkAlertas();sel(id);toast('✓ Atualizado')}
+  }
+}
+
+// ── ANALYTICS ────────────────────────────────────────────────
+function renderAnalytics(){
+  const hoje=new Date().toLocaleDateString('pt-BR')
+  const pedidosHoje=orders.filter(o=>new Date(o.received_at||o.receivedAt||0).toLocaleDateString('pt-BR')===hoje)
+  const valorHoje=pedidosHoje.reduce((a,o)=>a+(o.valor||0),0)
+  const semanaAtras=Date.now()-7*24*3600*1000
+  const pedidosSemana=orders.filter(o=>(o.received_at||o.receivedAt||0)>=semanaAtras)
+  const valorSemana=pedidosSemana.reduce((a,o)=>a+(o.valor||0),0)
+  const ticket=orders.length?orders.reduce((a,o)=>a+(o.valor||0),0)/orders.length:0
+  document.getElementById('an-hoje-qtd').textContent=pedidosHoje.length
+  document.getElementById('an-hoje-data').textContent=hoje
+  document.getElementById('an-hoje-val').textContent='R$ '+fmtVal(valorHoje)
+  document.getElementById('an-semana-qtd').textContent=pedidosSemana.length
+  document.getElementById('an-semana-val').textContent='R$ '+fmtVal(valorSemana)+' em vendas'
+  document.getElementById('an-ticket').textContent='R$ '+fmtVal(ticket)
+  renderChart()
+}
+
+function renderChart(){
+  const labels=[],qtdData=[],valData=[]
+  for(let i=13;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i)
+    const label=d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})
+    labels.push(label)
+    const dayOrders=orders.filter(o=>new Date(o.received_at||o.receivedAt||0).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})===label)
+    qtdData.push(dayOrders.length)
+    valData.push(+(dayOrders.reduce((a,o)=>a+(o.valor||0),0)).toFixed(2))
+  }
+  if(chartInst)chartInst.destroy()
+  const ctx=document.getElementById('myChart').getContext('2d')
+  chartInst=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Pedidos',data:qtdData,backgroundColor:'rgba(0,212,255,.3)',borderColor:'#00d4ff',borderWidth:1.5,borderRadius:4,yAxisID:'y'},
+        {label:'Valor (R$)',data:valData,type:'line',borderColor:'#00ff88',backgroundColor:'rgba(0,255,136,.08)',borderWidth:2,pointBackgroundColor:'#00ff88',pointRadius:3,tension:.4,yAxisID:'y1'},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{color:'#6b82a0',font:{family:'JetBrains Mono',size:11}}},
+        tooltip:{backgroundColor:'#0f1623',borderColor:'#1e2d45',borderWidth:1,titleColor:'#e2e8f6',bodyColor:'#6b82a0'}
+      },
+      scales:{
+        x:{ticks:{color:'#4a6080',font:{family:'JetBrains Mono',size:10}},grid:{color:'rgba(30,45,69,.5)'}},
+        y:{ticks:{color:'#4a6080',font:{family:'JetBrains Mono',size:10}},grid:{color:'rgba(30,45,69,.5)'}},
+        y1:{position:'right',ticks:{color:'#4a6080',font:{family:'JetBrains Mono',size:10},callback:v=>'R$'+v},grid:{display:false}}
+      }
+    }
+  })
+}
+
+// ── FILTROS ───────────────────────────────────────────────────
 function flt(f,el){
   filter=f
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'))
   if(el)el.classList.add('on')
   else{const c=document.querySelector(`.chip[data-f="${f}"]`);if(c)c.classList.add('on')}
-  closeDetail();render()
+  // garante que está na aba pedidos
+  const tab=document.querySelector('.tab.active')
+  if(document.getElementById('tab-pedidos').classList.contains('active')===false){
+    switchTab('pedidos', document.querySelectorAll('.tab')[0])
+  }
+  closeDetail(); render()
 }
 
-function cp(code){
-  if(!code)return
-  navigator.clipboard&&navigator.clipboard.writeText(code)
-  toast('✓ Código copiado: '+code)
-}
-function correios(code){
-  if(!code){toast('⚠ Sem código');return}
-  window.open('https://rastreamento.correios.com.br/app/index.php?objetos='+code,'_blank')
-}
-function wpp(phone,code){
-  const msg=encodeURIComponent(`Seu código de rastreio: ${code}\nRastreie em: correios.com.br`)
-  window.open(`https://wa.me/${phone.replace(/\D/g,'')}?text=${msg}`,'_blank')
-}
+// ── UTILS ─────────────────────────────────────────────────────
+function cp(code){if(!code)return;navigator.clipboard&&navigator.clipboard.writeText(code);toast('⎘ '+code)}
+function correios(code){if(!code){toast('⚠ Sem código');return}window.open('https://rastreamento.correios.com.br/app/index.php?objetos='+code,'_blank')}
+function wpp(phone,code){const msg=encodeURIComponent(`Olá! Seu pedido com código ${code} está disponível para retirada na agência dos Correios. Retire o quanto antes para evitar devolução! 📦`);window.open(`https://wa.me/${phone.replace(/\D/g,'')}?text=${msg}`,'_blank')}
+function fmtVal(v){return(v||0).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0})}
+function fmtPhone(p){if(!p)return'—';const d=p.replace(/\D/g,'');if(d.length===13)return`+${d.slice(0,2)} (${d.slice(2,4)}) ${d.slice(4,9)}-${d.slice(9)}`;if(d.length===11)return`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;return p}
 function exportCSV(){
   if(!orders.length){toast('⚠ Nenhum pedido');return}
-  const h=['Código','Nome','WhatsApp','Cidade','Status','Transportadora','Previsão','Transação','Recebido em']
-  const rows=orders.map(o=>[o.code,o.name,o.phone,o.city,S[o.status]?.label,o.carrier,o.eta,o.id,new Date(o.receivedAt).toLocaleString('pt-BR')].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','))
+  const h=['Código','Nome','WhatsApp','Cidade','Status','Transportadora','Previsão','Transação','Valor','Dias Agência','Recebido em']
+  const rows=orders.map(o=>[o.code,o.name,o.phone,o.city,S[o.status]?.label,o.carrier,o.eta,o.transaction_id||o.id,o.valor||0,diasNaAgencia(o),new Date(o.received_at||o.receivedAt||0).toLocaleString('pt-BR')].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','))
   const blob=new Blob(['\uFEFF'+[h.join(','),...rows].join('\n')],{type:'text/csv;charset=utf-8'})
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='braip_pedidos_'+new Date().toISOString().slice(0,10)+'.csv';a.click()
-  toast('📥 CSV exportado')
-}
-function fmtPhone(p){
-  if(!p)return'—'
-  const d=p.replace(/\D/g,'')
-  if(d.length===13)return`+${d.slice(0,2)} (${d.slice(2,4)}) ${d.slice(4,9)}-${d.slice(9)}`
-  if(d.length===11)return`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`
-  return p
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='braip_'+new Date().toISOString().slice(0,10)+'.csv';a.click()
+  toast('↓ CSV exportado')
 }
 let tTimer
-function toast(msg){
+function toast(msg, danger=false){
   document.querySelectorAll('.toast').forEach(t=>t.remove())
-  const t=document.createElement('div');t.className='toast';t.textContent=msg
-  document.body.appendChild(t)
-  clearTimeout(tTimer)
-  tTimer=setTimeout(()=>t.remove(),3000)
+  const t=document.createElement('div');t.className='toast'+(danger?' danger':'');t.textContent=msg
+  document.body.appendChild(t);clearTimeout(tTimer)
+  tTimer=setTimeout(()=>t.remove(),4000)
 }
 
-// inicia
+// ── INIT ──────────────────────────────────────────────────────
 fetchOrders()
-setInterval(fetchOrders, 10000) // atualiza a cada 10 segundos
+setInterval(fetchOrders, 10000)
 </script>
 </body>
 </html>
