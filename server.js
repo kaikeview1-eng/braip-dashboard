@@ -76,10 +76,25 @@ function mapStatus(raw) {
   if (!raw) return 'postado'
   const s = raw.toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  if (/aprovado|approved|paid|postado|posted/.test(s))              return 'postado'
-  if (/transito|transit|despacho|enviado|shipped|em rota/.test(s))  return 'transito'
-  if (/retirada|agencia|disponivel|aguardando|pickup/.test(s))      return 'retirada'
-  if (/entregue|entregado|delivered|concluido/.test(s))             return 'entregue'
-  if (/problema|falha|failed|nao encontrado|devolvido|recusado/.test(s)) return 'problema'
+
+  // tipos de evento da Braip (campo "type")
+  if (s.includes('delivered'))              return 'entregue'
+  if (s.includes('waiting_withdrawal') || 
+      s.includes('aguardando_retirada'))    return 'retirada'
+  if (s.includes('out_for_delivery') || 
+      s.includes('saiu_para_entrega'))      return 'transito'
+  if (s.includes('returned') || 
+      s.includes('devolvido') ||
+      s.includes('incorreto') ||
+      s.includes('atraso'))                 return 'problema'
+  if (s.includes('tracking_status'))        return 'transito'
+
+  // status em português
+  if (/aprovado|approved|paid|postado/.test(s))   return 'postado'
+  if (/transito|transit|despacho|enviado/.test(s)) return 'transito'
+  if (/retirada|agencia|disponivel|pickup/.test(s)) return 'retirada'
+  if (/entregue|delivered|concluido/.test(s))      return 'entregue'
+  if (/problema|falha|failed|devolvido/.test(s))   return 'problema'
+
   return 'postado'
 }
