@@ -160,7 +160,7 @@ app.post('/importar-rastreios', async (req, res) => {
         }
       } catch(e) { errors++; if(errors<=3) console.log(`[IMPORT] Erro em ${code}: ${e.message}`) }
 
-      await new Promise(r => setTimeout(r, 250))
+      await new Promise(r => setTimeout(r, 1200))
     }
     console.log(`[IMPORT] ✅ Sucesso: ${success} | ⏭ Existiam: ${skipped} | ❌ Erros: ${errors}`)
   })()
