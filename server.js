@@ -115,6 +115,57 @@ app.get('/api/orders', async (req, res) => {
   res.json(cache)
 })
 
+// ── IMPORTAR RASTREIOS NO SEU RASTREIO ───────────────────────
+app.post('/importar-rastreios', async (req, res) => {
+  const SR_KEY = req.body.key || process.env.SR_KEY
+  if (!SR_KEY) return res.status(400).json({ error: 'key obrigatória' })
+
+  res.json({ ok: true, message: 'Importação iniciada — acompanhe os logs do Render' })
+
+  ;(async () => {
+    console.log('[IMPORT] Buscando pedidos do Supabase...')
+    let orders = []
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=code,name,phone,transaction_id&code=not.eq.&status=in.(postado,transito,retirada)`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      })
+      orders = await r.json()
+    } catch(e) { console.error('[IMPORT] Erro Supabase:', e.message); return }
+
+    const codes = orders.filter(o => o.code && o.code.trim())
+    console.log(`[IMPORT] ${codes.length} pedidos para cadastrar`)
+
+    let success = 0, skipped = 0, errors = 0
+
+    for (const order of codes) {
+      const code = order.code.trim()
+      const name = (order.name || '').slice(0, 80)
+      const phone = (order.phone || '').replace(/\D/g, '')
+      const txn = order.transaction_id || code
+
+      const payload = { externalId: txn, trackingCode: code, trackingCarrier: 'Correios', customerName: name, status: 'shipped' }
+      if (phone && phone.length >= 10) payload.phone = phone
+
+      try {
+        const r = await fetch('https://seurastreio.com.br/api/public/pedidos', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${SR_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        if (r.ok) { success++ }
+        else {
+          const txt = await r.text()
+          if (r.status === 409 || txt.includes('exist') || txt.includes('duplicad')) skipped++
+          else { errors++; if(errors<=5) console.log(`[IMPORT] Erro ${r.status} em ${code}: ${txt.slice(0,100)}`) }
+        }
+      } catch(e) { errors++; if(errors<=3) console.log(`[IMPORT] Erro em ${code}: ${e.message}`) }
+
+      await new Promise(r => setTimeout(r, 250))
+    }
+    console.log(`[IMPORT] ✅ Sucesso: ${success} | ⏭ Existiam: ${skipped} | ❌ Erros: ${errors}`)
+  })()
+})
+
 // ── health check ──────────────────────────────────────────────
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', orders: cache.length, uptime: Math.floor(process.uptime()), db: 'supabase' })
